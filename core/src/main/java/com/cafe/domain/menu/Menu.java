@@ -24,4 +24,9 @@ public class Menu extends BaseAuditEntity {
     public static Menu create(String name, Integer price) {
         return new Menu(name, price);
     }
+
+    public void update(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
 }
