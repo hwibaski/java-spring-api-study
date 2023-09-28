@@ -83,4 +83,39 @@ class MenuWriteServiceTest {
                     .hasMessage("요청한 자원을 찾을 수 없습니다");
         }
     }
+
+    @Nested
+    @DisplayName("메뉴 삭제 테스트")
+    class DeleteMenuTest {
+        @Test
+        @DisplayName("메뉴를 삭제한다")
+        void deleteMenu() {
+            // given
+            String name = "아메리카노";
+            Integer price = 3000;
+
+            var savedMenu = menuRepository.save(Menu.create(name, price));
+
+            // when
+            menuWriteService.deleteMenu(savedMenu.getId());
+            var result = menuRepository.findById(savedMenu.getId());
+
+            // then
+            assertThat(result.isEmpty()).isEqualTo(true);
+        }
+
+        @Test
+        @DisplayName("id에 해당하는 메뉴가 없으면 예외를 발생시킨다")
+        void deleteMenuWhenNotFound() {
+            // given
+            Long menuNotSavedId = 1L;
+            String nameToUpdate = "아메리카노";
+            Integer priceToUpdate = 3000;
+
+            // when & then
+            assertThatThrownBy(() -> menuWriteService.updateMenu(menuNotSavedId, nameToUpdate, priceToUpdate))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage("요청한 자원을 찾을 수 없습니다");
+        }
+    }
 }

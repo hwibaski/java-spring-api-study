@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -325,6 +326,52 @@ class MenuControllerTest {
 
             // when & then
             mockMvc.perform(get(testApiPath, menuIdToGet).
+                                    contentType(APPLICATION_JSON)
+                   )
+                   .andExpect(status().isNotFound())
+                   .andExpect(jsonPath("$.success").value(false))
+                   .andExpect(jsonPath("$.message").value("요청한 자원을 찾을 수 없습니다"))
+                   .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+                   .andExpect(jsonPath("$.data").isEmpty())
+                   .andExpect(jsonPath("$.validation").isEmpty());
+        }
+    }
+
+    @Nested
+    @DisplayName("메뉴 삭제 테스트")
+    class DeleteMenuTest {
+        private final String testApiPath = "/api/v1/menu/{menuId}";
+
+        @Test
+        @DisplayName("메뉴를 삭제한다.")
+        void deleteMenuSuccess() throws Exception {
+            // given
+            Long menuIdToDelete = 1L;
+
+            given(menuWriteService.deleteMenu(menuIdToDelete)).willReturn(menuIdToDelete);
+
+            // when & then
+            mockMvc.perform(delete(testApiPath, menuIdToDelete)
+                                    .contentType(APPLICATION_JSON))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.success").value(true))
+                   .andExpect(jsonPath("$.message").value("메뉴가 삭제되었습니다."))
+                   .andExpect(jsonPath("$.code").value("OK"))
+                   .andExpect(jsonPath("$.data.id").isNotEmpty())
+                   .andExpect(jsonPath("$.validation").isEmpty());
+        }
+
+        @Test
+        @DisplayName("삭제하고자 하는 메뉴가 없으면 요청이 실패한다")
+        void deleteMenuWhenNotFoundMenu() throws Exception {
+            // given
+            Long menuIdToGet = 1L;
+
+            given(menuWriteService.deleteMenu(any()))
+                    .willThrow(new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
+
+            // when & then
+            mockMvc.perform(delete(testApiPath, menuIdToGet).
                                     contentType(APPLICATION_JSON)
                    )
                    .andExpect(status().isNotFound())

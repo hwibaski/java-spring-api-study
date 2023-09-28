@@ -3,6 +3,7 @@ package com.cafe.menu.controller;
 import com.cafe.dto.ApiResponse;
 import com.cafe.menu.controller.dto.CreateMenuRequest;
 import com.cafe.menu.controller.dto.CreateMenuResponse;
+import com.cafe.menu.controller.dto.DeleteMenuResponse;
 import com.cafe.menu.controller.dto.GetMenuResponse;
 import com.cafe.menu.controller.dto.UpdateMenuRequest;
 import com.cafe.menu.controller.dto.UpdateMenuResponse;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,5 +49,13 @@ public class MenuController {
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("메뉴가 조회되었습니다.", result));
+    }
+
+    @DeleteMapping("/api/v1/menu/{menuId}")
+    public ResponseEntity<ApiResponse<DeleteMenuResponse>> deleteMenu(@PathVariable("menuId") Long menuId) {
+        var result = menuWriteService.deleteMenu(menuId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(ApiResponse.success("메뉴가 삭제되었습니다.", new DeleteMenuResponse(result)));
     }
 }

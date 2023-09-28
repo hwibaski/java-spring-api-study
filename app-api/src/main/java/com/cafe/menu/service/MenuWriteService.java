@@ -22,10 +22,23 @@ public class MenuWriteService {
 
     @Transactional
     public Long updateMenu(Long id, String name, Integer price) {
-        var menu = menuRepository.findById(id)
-                                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
+        var menu = findMenuBYId(id);
         menu.update(name, price);
 
         return menu.getId();
+    }
+
+    @Transactional
+    public Long deleteMenu(Long id) {
+        var menu = findMenuBYId(id);
+        menuRepository.delete(menu);
+
+        return menu.getId();
+    }
+
+    private Menu findMenuBYId(Long menuId) {
+        return menuRepository.findById(menuId)
+                             .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND.getMessage(), ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getStatus()));
+
     }
 }
