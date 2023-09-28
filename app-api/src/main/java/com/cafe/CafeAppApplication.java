@@ -1,13 +1,11 @@
-package com.project.springapistudy;
+package com.cafe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringApiStudyApplication {
-
+public class CafeAppApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SpringApiStudyApplication.class, args);
+        SpringApplication.run(CafeAppApplication.class, args);
     }
-
 }

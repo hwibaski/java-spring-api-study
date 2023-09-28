@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    default: dev
+
+---
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://psql_db:5432/cafe
+    username: test
+    password: test
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false

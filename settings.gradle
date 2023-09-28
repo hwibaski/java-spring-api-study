@@ -1,1 +1,5 @@
 rootProject.name = 'spring-api-study'
+include 'core'
+include 'app-api'
+include 'db'
+
