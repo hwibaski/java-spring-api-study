@@ -3,14 +3,18 @@ package com.cafe.menu.controller;
 import com.cafe.dto.ApiResponse;
 import com.cafe.menu.controller.dto.CreateMenuRequest;
 import com.cafe.menu.controller.dto.CreateMenuResponse;
+import com.cafe.menu.controller.dto.GetMenuResponse;
 import com.cafe.menu.controller.dto.UpdateMenuRequest;
 import com.cafe.menu.controller.dto.UpdateMenuResponse;
+import com.cafe.menu.service.MenuReadService;
 import com.cafe.menu.service.MenuWriteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MenuController {
     private final MenuWriteService menuWriteService;
+    private final MenuReadService menuReadService;
 
     @PostMapping("/api/v1/menu")
     public ResponseEntity<ApiResponse<CreateMenuResponse>> createMenu(@Valid @RequestBody CreateMenuRequest request) {
@@ -34,5 +39,13 @@ public class MenuController {
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(ApiResponse.success("메뉴가 수정되었습니다.", new UpdateMenuResponse(result)));
+    }
+
+    @GetMapping("/api/v1/menu/{menuId}")
+    public ResponseEntity<ApiResponse<GetMenuResponse>> getMenu(@PathVariable("menuId") Long menuId) {
+        var result = menuReadService.getMenuById(menuId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(ApiResponse.success("메뉴가 조회되었습니다.", result));
     }
 }

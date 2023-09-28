@@ -1,6 +1,5 @@
 package com.cafe.menu.service;
 
-import com.cafe.domain.menu.Menu;
 import com.cafe.exception.NotFoundException;
 import com.cafe.repository.MenuRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -16,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class MenuWriteServiceTest {
+class MenuReadServiceTest {
     @Autowired
-    private MenuWriteService menuWriteService;
+    private MenuReadService menuReadService;
 
     @Autowired
     private MenuRepository menuRepository;
@@ -29,56 +28,34 @@ class MenuWriteServiceTest {
     }
 
     @Nested
-    @DisplayName("메뉴 생성 테스트")
-    class CreateMenuTest {
+    @DisplayName("메뉴 단건 조회 테스트")
+    class FindMenuTest {
         @Test
-        @DisplayName("메뉴를 생성한다")
-        void createMenu() {
+        @DisplayName("메뉴를 단건 조회한다")
+        void getMenuById() {
             // given
             String name = "아메리카노";
             Integer price = 3000;
+            var savedMenu = menuRepository.save(com.cafe.domain.menu.Menu.create(name, price));
 
             // when
-            var result = menuWriteService.createMenu(name, price);
+            var result = menuReadService.getMenuById(savedMenu.getId());
 
             // then
             assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(savedMenu.getId());
+            assertThat(result.name()).isEqualTo(savedMenu.getName());
+            assertThat(result.price()).isEqualTo(savedMenu.getPrice());
         }
-    }
-
-    @Nested
-    @DisplayName("메뉴 수정 테스트")
-    class UpdateMenuTest {
-        @Test
-        @DisplayName("메뉴를 수정한다")
-        void updateMenu() {
-            // given
-            String name = "아메리카노";
-            Integer price = 3000;
-
-            var savedMenu = menuRepository.save(Menu.create(name, price));
-
-            // when
-            var result = menuWriteService.updateMenu(savedMenu.getId(), "라떼", 4000);
-            var updatedMenu = menuRepository.findById(result);
-
-            // then
-            assertThat(updatedMenu).isNotNull();
-            assertThat(updatedMenu.get().getName()).isEqualTo("라떼");
-            assertThat(updatedMenu.get().getPrice()).isEqualTo(4000);
-        }
-
 
         @Test
         @DisplayName("id에 해당하는 메뉴가 없으면 예외를 발생시킨다")
-        void updateMenuWhenNotFound() {
+        void getMenuByIdWhenNotFound() {
             // given
             Long menuNotSavedId = 1L;
-            String nameToUpdate = "아메리카노";
-            Integer priceToUpdate = 3000;
 
             // when & then
-            assertThatThrownBy(() -> menuWriteService.updateMenu(menuNotSavedId, nameToUpdate, priceToUpdate))
+            assertThatThrownBy(() -> menuReadService.getMenuById(menuNotSavedId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessage("요청한 자원을 찾을 수 없습니다");
         }
